@@ -1,0 +1,26 @@
+﻿USE [master]
+GO
+CREATE DATABASE [Inventory]
+GO
+USE [Inventory]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Product](
+	[product_id] [uniqueidentifier] NOT NULL,
+	[product_name] [nchar](250) NULL,
+	[product_price] [decimal](18, 2) NULL,
+	[available_stock] [decimal](18, 2) NULL,
+	[description] [nvarchar](250) NULL,
+ CONSTRAINT [PK_Product] PRIMARY KEY CLUSTERED 
+(
+	[product_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+USE [master]
+GO
+ALTER DATABASE [Inventory] SET  READ_WRITE 
+GO

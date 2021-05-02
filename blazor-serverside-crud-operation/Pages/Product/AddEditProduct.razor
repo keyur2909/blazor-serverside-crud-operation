@@ -1,0 +1,105 @@
+﻿@page "/product/add"
+@page "/product/edit/{productID}"
+
+<h1>@Title Product</h1>
+<hr />
+
+<EditForm Model="@product" >
+    <DataAnnotationsValidator />
+    <div class="form-group row">
+        <label class="control-label col-md-12">Name</label>
+        <div class="col-md-4">
+            <input type="text" class="form-control" @bind-value="product.ProductName" />
+        </div>
+        <ValidationMessage For="@(() => product.ProductName)" />
+    </div>
+
+    <div class="form-group row">
+        <label class="control-label col-md-12">Description</label>
+        <div class="col-md-4">
+            <input type="text" class="form-control" @bind-value="product.Description" />
+        </div>
+        <ValidationMessage For="@(() => product.Description)" />
+    </div>
+    <div class="form-group row">
+        <label class="control-label col-md-12">Price</label>
+        <div class="col-md-4">
+            <input type="number" class="form-control" @bind-value="product.ProductPrice" />
+        </div>
+        <ValidationMessage For="@(() => product.ProductPrice)" />
+    </div>
+
+    <div class="form-group row">
+        <label class="control-label col-md-12">Stock</label>
+        <div class="col-md-4">
+            <input type="number" class="form-control" @bind-value="product.AvailableStock" />
+        </div>
+        <ValidationMessage For="@(() => product.ProductPrice)" />
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary" @onclick="SaveProduct">Save</button>
+        <button class="btn btn-light" @onclick="Cancel">Cancel</button>
+    </div>
+</EditForm>
+@code
+{
+    [Inject]
+    protected ProductService ProductService { get; set; }
+    [Inject]
+    public NavigationManager UrlNavigationManager { get; set; }
+    [Parameter]
+    public string productID { get; set; }
+
+    protected string Title = "Add";
+    public Product product = new Product();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (productID != null)
+        {
+            Title = "Edit";
+            product = await ProductService.Details(new Guid(productID));
+        }
+    }
+
+
+    protected async Task SaveProduct()
+    {
+
+        if (productID != null)
+        {
+            await Task.Run(() =>
+            {
+                ProductService.Edit(product);
+            });
+            Cancel();
+        }
+        else
+        {
+            if (String.IsNullOrEmpty(product.ProductName) || String.IsNullOrEmpty(product.Description))
+            {
+            }
+            else {
+                await Task.Run(() =>
+                {
+                    product.ProductId = Guid.NewGuid();
+                    ProductService.Create(product);
+                });
+                Cancel();
+            }
+        }
+
+
+
+    }
+
+    public void Cancel()
+    {
+        UrlNavigationManager.NavigateTo("/product");
+    }
+}
